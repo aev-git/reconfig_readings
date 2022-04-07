@@ -10,6 +10,7 @@ This program takes a csv as input and exports a csv with the readings configured
 Anki also puts tags at the end of csv rows
 
 ## Assumptions
+* reading is just kana, no kanji
 * no mixed japanese + western characters
 * 6th csv field is tags; this is so the program can look in row[5] for the 'scraped' tag
 * a note w/ the 'scraped' tag doesn't have okurigana in the reading field, just the reading for kanji; this is how cards are set up in the jisho_to_csv program
