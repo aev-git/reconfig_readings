@@ -1,12 +1,18 @@
 #See README.md for details and assumptions
 import csv
+import string
 import regex as re
 
 def main():
-    OGFileData = []
-    scan_source_file(OGFileData)
-    process_words(OGFileData)
-    write_to_file
+    try:
+        OGFileData = []
+        scan_source_file(OGFileData)
+        process_words(OGFileData)
+        write_to_file(OGFileData)
+
+    except Exception as e:
+        print("An Exception has occured:")
+        print(e)
 
 def scan_source_file(list):
     try:         
@@ -17,12 +23,88 @@ def scan_source_file(list):
             for row in csv_f:
                 if len(row) > 2: #if line isn't empty and has at least up to 'reading' field                 
                     if "[" not in row[1]: #assumes readings with brackets are already configured correctly
-                        list.append(row)
+                        if get_word_type(row[0]) == "Just Kanji" or "Kanji and Kana" or "Just Kana":
+                            list.append(row)
                 
     except Exception as e:
         print("An exception has occurred while scanning the source file:")
         print(e)
 
+def get_word_type(word):
+    try:
+        wordType = ""
+        hasKanji = re.search(r'\p{Han}', word)
+        hasKana = re.search(r'\p{Hiragana}|\p{Katakana}', word)
+
+        #word is just kanji
+        if hasKanji and not hasKana: 
+            wordType = "Just Kanji"
+        
+        #word is a mix of kanji and kana, any configuration
+        elif hasKanji and hasKana: 
+            wordType = "Kanji and Kana"
+
+        #Just kana    
+        elif not hasKanji and hasKana: 
+            wordType = "Just Kana"
+        
+        #No Jp characters; in theory, shouldn't ever get here
+        else:
+            wordType = "No Japanese characters"
+
+        return wordType
+
+    except Exception as e:
+        print("An Exception has occured while trying to assess the word type:")
+        print(e)
+
+def process_words(list):        
+    try:
+        for row in list:            
+            scraped = bool
+            exprs = row[0]
+            reading = row[1]
+            wordType = get_word_type(exprs)
+            print("word: " + exprs)
+
+            #check for scraped tag (see assumptions in README.md)
+            if len(row) >= 6: 
+                if "scraped" in row[5]:
+                    scraped = True                      
+
+            if wordType == "Just Kanji":
+                print("just kanji\nreading: " + reading)
+                reading = exprs + "[" + reading + "]"
+                print("new reading: " + reading + "\n")
+                row[1] = reading
+                
+            elif wordType == "Kanji and Kana": 
+                print("has kanji and kana\nreading: " + reading)
+
+                #check for okurigana, which need to be removed from reading
+                if not scraped: 
+                    remove_okurigana()
+
+                format_reading(exprs, reading)
+                print("new reading: " + reading + "\n")
+                row[1] = reading
+    
+            elif wordType == "Just Kana": 
+                #if no reading, reading should be expression
+                if len(reading) == 0: 
+                        print("reading empty: "+ reading)
+                        reading = exprs
+                        print("new reading: " + reading + "\n")
+                        row[1] = reading
+                #should never get here but
+                else:
+                    if reading != exprs:
+                        print("this word is just kana, but the expression and reading are different?? check README.md")
+
+    except Exception as e:
+        print("An Exception has occured while processing words:")
+        print(e)                    
+   
 def remove_okurigana(word):    
     pass
 
@@ -31,59 +113,7 @@ def format_reading(expression, reading):
 
 def write_to_file(note):
     pass
-
-def process_words(list):        
-    try:
-        for row in list:            
-            scraped = bool
-            exprs = row[0]
-            reading = row[1]
-            print("word: " + exprs)
-
-            #check for scraped tag (see assumptions in README.md)
-            if len(row) >= 6: 
-                if "scraped" in row[5]:
-                    scraped = True  
-
-            #if no reading, reading should be expression
-            if len(reading) == 0: 
-                    print("reading empty: "+ reading)
-                    reading = exprs
-                    print("new reading: " + reading + "\n")
-                    row[1] = reading
-            else:               
-                    hasKanji = re.search(r'\p{Han}', exprs)
-                    hasKana = re.search(r'\p{Hiragana}|\p{Katakana}', exprs)
-
-                    #word is just kanji
-                    if hasKanji and not hasKana: 
-                        print("just kanji\nreading: " + reading)
-                        reading = exprs + "[" + reading + "]"
-                        print("new reading: " + reading + "\n")
-                    
-                    #word is a mix of kanji and kana, any configuration
-                    elif hasKanji and hasKana: 
-                        print("has kanji and kana\nreading: " + reading)
-
-                        #check for okurigana, which need to be removed from reading
-                        if not scraped: 
-                            remove_okurigana()
-
-                        format_reading(exprs, reading)
-                        print("new reading: " + reading + "\n")
-
-                    #Just kana; in theory shouldn't ever get to this point?    
-                    elif not hasKanji and hasKana: 
-                        print("just kana; something isn't configured as expected.\nreading: " + reading + "\n")
-                    
-                    #No Jp characters; shouldn't get here either
-                    else:
-                        print("no Japanese characters?")
-
-    except Exception as e:
-        print("An Exception has occured while processing words:")
-        print(e)                    
-                    
+                 
 if __name__ == "__main__":
     main()
 #write to new csv file           
