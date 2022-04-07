@@ -1,18 +1,20 @@
 #See README.md for details and assumptions
 import csv
+from re import I
 import string
 import regex as re
 
 def main():
-    try:
-        OGFileData = []
-        scan_source_file(OGFileData)
-        process_words(OGFileData)
-        write_to_file(OGFileData)
+    #OGFileData = []
+    #scan_source_file(OGFileData)
+    #process_words(OGFileData)
+    #write_to_file(OGFileData)
 
-    except Exception as e:
-        print("An Exception has occured:")
-        print(e)
+    print(remove_okurigana("何て", "なんて"))
+    print(remove_okurigana("お化け", "おばけ"))
+    print(remove_okurigana("お茶", "おちゃ"))
+    print(remove_okurigana("おちゃお茶", "おちゃおちゃ"))
+    print(remove_okurigana("揃える", "そろえる"))
 
 def scan_source_file(list):
     try:         
@@ -55,7 +57,7 @@ def get_word_type(word):
         return wordType
 
     except Exception as e:
-        print("An Exception has occured while trying to assess the word type:")
+        print("An Exception has occurred while trying to assess the word type:")
         print(e)
 
 def process_words(list):        
@@ -83,7 +85,7 @@ def process_words(list):
 
                 #check for okurigana, which need to be removed from reading
                 if not scraped: 
-                    remove_okurigana()
+                    reading = remove_okurigana(exprs, reading)
 
                 format_reading(exprs, reading)
                 print("new reading: " + reading + "\n")
@@ -102,11 +104,24 @@ def process_words(list):
                         print("this word is just kana, but the expression and reading are different?? check README.md")
 
     except Exception as e:
-        print("An Exception has occured while processing words:")
+        print("An Exception has occurred while processing words:")
         print(e)                    
    
-def remove_okurigana(word):    
-    pass
+def remove_okurigana(expression, reading):    
+    try:    
+        r = list(reading)
+        r.append("")
+        #remove front kana
+        for i in range(0, len(expression)):
+            if r[i] == expression[i]:
+                del r[i]
+
+        cleanReading = "".join(r)
+        return cleanReading
+
+    except Exception as e:
+        print("An Exception has occurred while trying to remove okurigana:")
+        print(e)
 
 def format_reading(expression, reading):
     pass
