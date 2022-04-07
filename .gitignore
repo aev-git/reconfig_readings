@@ -160,8 +160,3 @@ cython_debug/
 #.idea/
 
 #testing files
-Selected Notes.csv
-Selected Notes.txt
-copytest.csv
-bigoutputtest.csv
-testoutput.csv
