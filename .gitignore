@@ -163,3 +163,5 @@ cython_debug/
 Selected Notes.csv
 Selected Notes.txt
 copytest.csv
+bigoutputtest.csv
+testoutput.csv

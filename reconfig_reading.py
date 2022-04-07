@@ -10,7 +10,7 @@ def main():
 
 def scan_source_file(list):
     try:         
-        sourcefile = input("csv file: ")
+        sourcefile = input("type import csv file: ")
         with open(sourcefile, encoding="utf8") as f:
             csv_f = csv.reader(f)
 
@@ -161,9 +161,13 @@ def format_reading(expression, reading):
         print("An Exception has occurred while trying to format the correct furigana reading:")
         print(e)
 
-def write_to_file(note):
+def write_to_file(list):
     try:
-        pass
+        filename = input("type export csv file: ")
+        with open(filename, 'w', encoding="utf8") as csvfile:
+            csvwriter = csv.writer(csvfile)
+            csvwriter.writerows(list)
+            print("finished!")
     
     except Exception as e:
         print("An Exception has occurred while trying to write to the new file:")
