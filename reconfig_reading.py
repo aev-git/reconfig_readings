@@ -26,6 +26,9 @@ def scan_source_file(list):
 def remove_okurigana(word):    
     pass
 
+def format_reading(expression, reading):
+    pass
+
 def write_to_file(note):
     pass
 
@@ -60,13 +63,14 @@ def process_words(list):
                     
                     #word is a mix of kanji and kana, any configuration
                     elif hasKanji and hasKana: 
-                        print("has kanji and kana\nreading: " + reading + "\n")
+                        print("has kanji and kana\nreading: " + reading)
 
                         #check for okurigana, which need to be removed from reading
                         if not scraped: 
                             remove_okurigana()
 
-                        #put reading in     
+                        format_reading(exprs, reading)
+                        print("new reading: " + reading + "\n")
 
                     #Just kana; in theory shouldn't ever get to this point?    
                     elif not hasKanji and hasKana: 
