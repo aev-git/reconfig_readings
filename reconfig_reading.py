@@ -1,20 +1,12 @@
 #See README.md for details and assumptions
 import csv
-from re import I
-import string
 import regex as re
 
 def main():
-    #OGFileData = []
-    #scan_source_file(OGFileData)
-    #process_words(OGFileData)
-    #write_to_file(OGFileData)
-
-    print(remove_okurigana("何て", "なんて"))
-    print(remove_okurigana("お化け", "おばけ"))
-    print(remove_okurigana("お茶", "おちゃ"))
-    print(remove_okurigana("おちゃお茶", "おちゃおちゃ"))
-    print(remove_okurigana("揃える", "そろえる"))
+    OGFileData = []
+    scan_source_file(OGFileData)
+    process_words(OGFileData)
+    write_to_file(OGFileData)
 
 def scan_source_file(list):
     try:         
@@ -25,7 +17,8 @@ def scan_source_file(list):
             for row in csv_f:
                 if len(row) > 2: #if line isn't empty and has at least up to 'reading' field                 
                     if "[" not in row[1]: #assumes readings with brackets are already configured correctly
-                        if get_word_type(row[0]) == "Just Kanji" or "Kanji and Kana" or "Just Kana":
+                        wordType = get_word_type(row[0])
+                        if wordType == "Just Kanji" or wordType == "Kanji and Kana" or wordType == "Just Kana":
                             list.append(row)
                 
     except Exception as e:
@@ -63,7 +56,7 @@ def get_word_type(word):
 def process_words(list):        
     try:
         for row in list:            
-            scraped = bool
+            scraped = False
             exprs = row[0]
             reading = row[1]
             wordType = get_word_type(exprs)
@@ -102,35 +95,55 @@ def process_words(list):
                 else:
                     if reading != exprs:
                         print("this word is just kana, but the expression and reading are different?? check README.md")
+                    else:
+                        print("reading matches expression\n")
 
     except Exception as e:
         print("An Exception has occurred while processing words:")
         print(e)                    
    
 def remove_okurigana(expression, reading):    
-    try:    
-        r = list(reading)
-        r.append("")
-        #remove front kana
-        for i in range(0, len(expression)):
-            if r[i] == expression[i]:
-                del r[i]
+    try:   
+        r = reading
+        hitKanji = False
+        removeBack = []
 
-        cleanReading = "".join(r)
-        return cleanReading
+        for char in expression:
+            if not hitKanji:
+                if not re.match(r'\p{Han}', char):
+                    r = r.removeprefix(char)
+                else:
+                    hitKanji = True
+            elif hitKanji:
+                if not re.match(r'\p{Han}', char):
+                    removeBack.append(char)
+
+        i = len(removeBack) - 1
+        while i >= 0:
+            r = r.removesuffix(removeBack[i])
+            i -= 1
+        print("okurigana removed!")
+        return r
 
     except Exception as e:
         print("An Exception has occurred while trying to remove okurigana:")
         print(e)
 
 def format_reading(expression, reading):
-    pass
+    try:
+        pass
+
+    except Exception as e:
+        print("An Exception has occurred while trying to format the correct furigana reading:")
+        print(e)
 
 def write_to_file(note):
-    pass
+    try:
+        pass
+    
+    except Exception as e:
+        print("An Exception has occurred while trying to write to the new file:")
+        print(e)
                  
 if __name__ == "__main__":
     main()
-#write to new csv file           
-
-
