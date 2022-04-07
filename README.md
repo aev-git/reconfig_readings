@@ -17,7 +17,7 @@ Boy we got a lotta these, huh
 * a note w/ the 'scraped' tag doesn't have okurigana in the reading field, just the reading for kanji; this is how cards are set up in the jisho_to_csv program
 * otherwise, assume the readings field includes okurigana that need to be removed
 * if a reading has brackets, assume it is already configured correctly
-* if a note has no reading, it is assumed that the reading should be the expression. A note should only have no reading if the expression is just kana. 
+* if a note has no reading, it is assumed that the reading should be the expression. A note should only have no reading if the expression is just kana, and only words without kanji will be processed this way. 
 
 !!! Words with kanji, but no reading, will not be configured properly for furigana !!!
 
