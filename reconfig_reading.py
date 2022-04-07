@@ -80,7 +80,7 @@ def process_words(list):
                 if not scraped: 
                     reading = remove_okurigana(exprs, reading)
 
-                format_reading(exprs, reading)
+                reading = format_reading(exprs, reading)
                 print("new reading: " + reading + "\n")
                 row[1] = reading
     
@@ -131,7 +131,26 @@ def remove_okurigana(expression, reading):
 
 def format_reading(expression, reading):
     try:
-        pass
+        r = []
+        hitKanji = False
+        formatted = False
+
+        for char in expression:
+            if not hitKanji:
+                r.append(char)
+                if re.match(r'\p{Han}', char):
+                    hitKanji = True
+            elif hitKanji:
+                if not re.match(r'\p{Han}', char):
+                    if not formatted:
+                        r.append("[" + reading + "]")
+                        formatted = True
+                    r.append(char)
+                else:
+                    r.append(char)
+        result = "".join(r)
+        return result
+                    
 
     except Exception as e:
         print("An Exception has occurred while trying to format the correct furigana reading:")
