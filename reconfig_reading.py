@@ -135,19 +135,24 @@ def format_reading(expression, reading):
         hitKanji = False
         formatted = False
 
-        for char in expression:
-            if not hitKanji:
+        last = len(expression)
+
+        for i in range(0, last):
+            char = expression[i]
+            if re.match(r'\p{Han}', char):
+                if not hitKanji and i != 0:
+                    r.append(" ")
                 r.append(char)
-                if re.match(r'\p{Han}', char):
-                    hitKanji = True
-            elif hitKanji:
-                if not re.match(r'\p{Han}', char):
-                    if not formatted:
-                        r.append("[" + reading + "]")
-                        formatted = True
-                    r.append(char)
-                else:
-                    r.append(char)
+                hitKanji = True
+                if i == last - 1:
+                    r.append("[" + reading + "]")
+                    formatted = True
+            else:
+                if not formatted and hitKanji:
+                    r.append("[" + reading + "]")
+                    formatted = True
+                r.append(char)
+                    
         result = "".join(r)
         return result
                     
